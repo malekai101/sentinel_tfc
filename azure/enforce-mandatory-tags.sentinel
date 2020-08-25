@@ -1,0 +1,16 @@
+import "tfplan/v2" as tfplan
+
+az_instances = filter tfplan.resource_changes as _, rc {
+    rc.type is "azurerm_linux_virtual_machine" and
+    (rc.change.actions contains "create" or rc.change.actions is ["update"])
+}
+
+az_instances = rule {
+    all ec2_instances as _, instances {
+        instances.change.after.tags is not null
+    }
+}
+
+main = rule {
+    instance_tags
+}
